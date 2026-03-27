@@ -1,3 +1,5 @@
+import re
+
 from src.masks import get_mask_account, get_mask_card_number
 
 
@@ -17,6 +19,15 @@ def mask_account_card(card_or_account_number: str) -> str:
     return " ".join(new_splits)
 
 
-def get_date(date: str) -> str:
-    """Функция, которая принимает на вход строку с полной датой и возвращает строку с датой в формате 'ДД.ММ.ГГГГ'"""
-    return date[8:10] + "." + date[5:7] + "." + date[:4]
+# def get_date(date: str) -> str:
+#     """Функция, которая принимает на вход строку с полной датой и возвращает строку с датой в формате 'ДД.ММ.ГГГГ'"""
+#     return date[8:10] + "." + date[5:7] + "." + date[:4]
+
+
+def get_date_from_string(date_str: str) -> str:
+    """Функция, которая извлекает дату из строки"""
+    match = re.search(r"(\d{4})-(\d{2})-(\d{2})", date_str)
+    if match:
+        year, month, day = match.groups()
+        return f"{day}.{month}.{year}"
+    return "Дата не найдена"
