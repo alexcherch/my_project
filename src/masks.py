@@ -9,7 +9,3 @@ def get_mask_account(account_number: int | str) -> str:
     """Функция принимает на вход номер счета в виде числа и возвращает маску номера"""
     account_str = str(account_number)
     return "**" + account_str[-4:]
-
-
-print(get_mask_card_number(7000792289606361))
-print(get_mask_account(73654108430135874305))
