@@ -47,3 +47,9 @@ print(get_date("2024-03-11T02:26:18.671407"))
 # Фильтрация данных
 data = [{'id': 1, 'state': 'EXECUTED'}, {'id': 2, 'state': 'CANCELED'}]
 print(filter_by_state(data))
+```
+
+## Проверки (Linting & Typing)
+Код проверен с помощью:
+- `flake8`: ошибок не обнаружено.
+- `mypy`: ошибок не обнаружено.
