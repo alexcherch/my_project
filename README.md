@@ -19,6 +19,12 @@
 *   `filter_by_state(list_of_states, state='EXECUTED')`: Фильтрует операции по их статусу.
 *   `sort_by_date(list_of_dates, reverse=True)`: Сортирует операции по дате (по умолчанию от самых новых).
 
+### 3. Инструменты обработки данных (модуль `generators`)
+Использование генераторов для эффективной обработки больших объемов данных.
+*   `filter_by_currency`: Фильтрует транзакции по заданному коду валюты.
+*   `transaction_descriptions`: Возвращает описание каждой операции по очереди.
+*   `card_number_generator`: Генерирует номера карт в формате `XXXX XXXX XXXX XXXX` в заданном диапазоне.
+
 ## Установка
 1. Клонируйте репозиторий:
    ```bash
@@ -33,20 +39,17 @@
 ## Примеры использования
 
 ```python
-from src.widget import mask_account_card, get_date_from_string
-from src.processing import filter_by_state
+from src.widget import mask_account_card, get_date
+from src.generators import filter_by_currency, card_number_generator
 
 # Маскировка карты
 print(mask_account_card("Visa Platinum 7000792289606361")) 
 # Результат: Visa Platinum 7000 79** **** 6361
 
-# Форматирование даты
-print(get_date_from_string("2024-03-11T02:26:18.671407")) 
-# Результат: 11.03.2024
-
-# Фильтрация данных
-data = [{'id': 1, 'state': 'EXECUTED'}, {'id': 2, 'state': 'CANCELED'}]
-print(filter_by_state(data))
+# Генерация номеров карт
+for card in card_number_generator(1, 2):
+    print(card)
+# Результат: 0000 0000 0000 0001, 0000 0000 0000 0002
 ```
 
 ## Качество кода и тестирование
@@ -63,10 +66,12 @@ print(filter_by_state(data))
 ### Запуск тестов и покрытие
 Для запуска тестов и генерации отчета о покрытии (Target: 100%):
 ```bash
-pytest --cov=src --cov-report term-missing
+pytest --cov=src --cov-report=html
 ```
+*Подробный отчет доступен в папке `htmlcov/index.html`.*
 
 ### Описание тестов
 - **tests/test_masks.py**: Маскирование номеров карт и счетов.
 - **tests/test_widget.py**: Логика обработки входных строк и дат.
 - **tests/test_processing.py**: Фильтрация по статусам и хронологическая сортировка.
+- **tests/test_generators.py**: Тестирование функций фильтрации по валюте, получения описаний и генератора номеров карт.
