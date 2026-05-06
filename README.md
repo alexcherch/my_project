@@ -11,19 +11,18 @@
 *   `get_mask_card_number`: Принимает номер карты и возвращает его маску в формате `XXXX XX** **** XXXX`.
 *   `get_mask_account`: Принимает номер счета и возвращает его маску в формате `**XXXX` (только последние 4 цифры).
 *   `mask_account_card`: Универсальная функция, которая определяет тип входных данных (карта или счет) и применяет соответствующую маску.
-*   `get_date`: Преобразует строку с датой из формата ISO (например, `2024-03-11T...`) в формат `ДД.ММ.ГГГГ`.
+*   `get_date_from_string`: Преобразует строку с датой из формата ISO (например, `2024-03-11T...`) в формат `ДД.ММ.ГГГГ`.
 
-### 2. Обработка списков (модуль `processing`)
-Функции для подготовки данных к отображению в виджете.
+### 2. Обработка списков и инструменты (модули `processing` и `generators`)
 
-*   `filter_by_state(list_of_states, state='EXECUTED')`: Фильтрует операции по их статусу.
-*   `sort_by_date(list_of_dates, reverse=True)`: Сортирует операции по дате (по умолчанию от самых новых).
+*   `filter_by_state` и `sort_by_date`: Фильтрация и сортировка операций.
+*   `filter_by_currency`: Фильтрация транзакций по коду валюты.
+*   `transaction_descriptions`: Генератор описаний операций.
+*   `card_number_generator`: Генератор номеров карт в заданном диапазоне.
 
-### 3. Инструменты обработки данных (модуль `generators`)
-Использование генераторов для эффективной обработки больших объемов данных.
-*   `filter_by_currency`: Фильтрует транзакции по заданному коду валюты.
-*   `transaction_descriptions`: Возвращает описание каждой операции по очереди.
-*   `card_number_generator`: Генерирует номера карт в формате `XXXX XXXX XXXX XXXX` в заданном диапазоне.
+### 3. Декораторы (модуль `decorators`)
+В проекте реализованы вспомогательные инструменты для контроля работы функций.
+* Декоратор `log`: Автоматически логирует начало и результат выполнения функции, а также фиксирует возникшую ошибку. Поддерживает вывод как в консоль, так и в файл.
 
 ## Установка
 1. Клонируйте репозиторий:
@@ -39,8 +38,9 @@
 ## Примеры использования
 
 ```python
-from src.widget import mask_account_card, get_date
-from src.generators import filter_by_currency, card_number_generator
+from src.widget import mask_account_card
+from src.generators import card_number_generator
+from src.decorators import log
 
 # Маскировка карты
 print(mask_account_card("Visa Platinum 7000792289606361")) 
@@ -50,6 +50,16 @@ print(mask_account_card("Visa Platinum 7000792289606361"))
 for card in card_number_generator(1, 2):
     print(card)
 # Результат: 0000 0000 0000 0001, 0000 0000 0000 0002
+
+# Пример использования декоратора логирования
+@log(filename="mylog.txt")
+def add(a: int, b: int) -> int:
+    return a + b
+
+add(5, 7) 
+# В файл запишется: 
+# add started
+# add ok
 ```
 
 ## Качество кода и тестирование
@@ -75,3 +85,4 @@ pytest --cov=src --cov-report=html
 - **tests/test_widget.py**: Логика обработки входных строк и дат.
 - **tests/test_processing.py**: Фильтрация по статусам и хронологическая сортировка.
 - **tests/test_generators.py**: Тестирование функций фильтрации по валюте, получения описаний и генератора номеров карт.
+- **tests/test_decorators.py**: Тестирование логики декоратора (успех/ошибка)
