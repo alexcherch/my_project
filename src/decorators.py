@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Callable, Any
+from typing import Any, Callable
 
 
 def log(filename: str | None = None) -> Callable:
