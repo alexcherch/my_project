@@ -5,7 +5,6 @@ def read_transactions_csv(file_path: str) -> list[dict]:
     """Считывает финансовые операции из CSV-файла и возвращает список словарей."""
     try:
         df = pd.read_csv(file_path)
-        # Превращаем DataFrame в список словарей
         transactions: list[dict] = df.to_dict(orient="records")
         return transactions
     except FileNotFoundError:
@@ -19,7 +18,6 @@ def read_transactions_csv(file_path: str) -> list[dict]:
 def read_transactions_xlsx(file_path: str) -> list[dict]:
     """Считывает финансовые операции из XLSX-файла и возвращает список словарей."""
     try:
-        # Для работы с xlsx используется движок openpyxl
         df = pd.read_excel(file_path, engine="openpyxl")
         transactions: list[dict] = df.to_dict(orient="records")
         return transactions
