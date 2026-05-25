@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from collections import Counter
 from typing import Any
 
 logger = logging.getLogger("utils")
@@ -53,3 +54,25 @@ def process_bank_search(data: list[dict[str, Any]], search: str) -> list[dict[st
 
     logger.info(f"Поиск по запросу '{search}' успешно завершен. Найдено совпадений: {len(filtered_data)}")
     return filtered_data
+
+
+def process_bank_operations(data: list[dict[str, Any]], categories: list[str]) -> dict[str, int]:
+    """Подсчитывает количество операций для каждой заданной категории в поле description."""
+    logger.info(f"Начало подсчета операций по {len(categories)} категориям.")
+    found_categories: list[str] = []
+
+    for transaction in data:
+        description = transaction.get("description")
+        if not isinstance(description, str):
+            continue
+
+        for category in categories:
+            if re.search(re.escape(category), description, re.IGNORECASE):
+                found_categories.append(category)
+
+    counts = dict(Counter(found_categories))
+
+    result = {category: counts.get(category, 0) for category in categories}
+
+    logger.info("Подсчет операций успешно завершен.")
+    return result
