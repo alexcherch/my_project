@@ -1,5 +1,7 @@
 import json
 import logging
+import re
+from collections import Counter
 from typing import Any
 
 logger = logging.getLogger("utils")
@@ -30,3 +32,53 @@ def load_transactions(file_path: str) -> list[dict[str, Any]]:
     except json.JSONDecodeError:
         logger.error(f"Ошибка декодирования JSON в файле: {file_path}")
         return []
+
+
+def process_bank_search(data: list[dict[str, Any]], search: str) -> list[dict[str, Any]]:
+    """Фильтрует список транзакций по строке поиска в описании (description)."""
+    if not search:
+        logger.info("Передана пустая строка поиска. Возвращен исходный список.")
+        return data
+
+    try:
+        pattern = re.compile(re.escape(search), re.IGNORECASE)
+    except Exception as e:
+        logger.error(f"Ошибка компиляции регулярного выражения для '{search}': {e}")
+        return []
+
+    filtered_data: list[dict[str, Any]] = []
+    for transaction in data:
+        description = transaction.get("description")
+        if isinstance(description, str) and pattern.search(description):
+            filtered_data.append(transaction)
+
+    logger.info(
+        "Поиск по запросу %r успешно завершен. Найдено совпадений: %d",
+        search, len(filtered_data)
+    )
+    return filtered_data
+
+
+def process_bank_operations(data: list[dict[str, Any]], categories: list[str]) -> dict[str, int]:
+    """Подсчитывает количество операций для каждой заданной категории в поле description."""
+    logger.info(
+        "Начало подсчета операций по %d категориям.",
+        len(categories)
+    )
+    found_categories: list[str] = []
+
+    for transaction in data:
+        description = transaction.get("description")
+        if not isinstance(description, str):
+            continue
+
+        for category in categories:
+            if re.search(re.escape(category), description, re.IGNORECASE):
+                found_categories.append(category)
+
+    counts = dict(Counter(found_categories))
+
+    result = {category: counts.get(category, 0) for category in categories}
+
+    logger.info("Подсчет операций успешно завершен.")
+    return result
