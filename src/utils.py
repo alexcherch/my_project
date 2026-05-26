@@ -52,13 +52,19 @@ def process_bank_search(data: list[dict[str, Any]], search: str) -> list[dict[st
         if isinstance(description, str) and pattern.search(description):
             filtered_data.append(transaction)
 
-    logger.info(f"Поиск по запросу '{search}' успешно завершен. Найдено совпадений: {len(filtered_data)}")
+    logger.info(
+        "Поиск по запросу %r успешно завершен. Найдено совпадений: %d",
+        search, len(filtered_data)
+    )
     return filtered_data
 
 
 def process_bank_operations(data: list[dict[str, Any]], categories: list[str]) -> dict[str, int]:
     """Подсчитывает количество операций для каждой заданной категории в поле description."""
-    logger.info(f"Начало подсчета операций по {len(categories)} категориям.")
+    logger.info(
+        "Начало подсчета операций по %d категориям.",
+        len(categories)
+    )
     found_categories: list[str] = []
 
     for transaction in data:
